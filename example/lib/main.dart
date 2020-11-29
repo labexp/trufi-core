@@ -12,6 +12,8 @@ void main() async {
   final globalCfg = GlobalConfiguration();
   await globalCfg.loadFromAsset("app_config");
 
+trufiCfg.map.mapTilerKey="pk.eyJ1Ijoic2t5d2llIiwiYSI6ImNqdTFjYjgxZTAwNWczeW55YWVtb3dyY3AifQ.H_FCDoWOFC_atf6HSWZRoQ";
+  
   // Abbreviations
   trufiCfg.abbreviations.addAll({
     "Avenida": "Av.",
@@ -82,9 +84,9 @@ void main() async {
   trufiCfg.map.onlineMaxZoom = 19.0;
   trufiCfg.map.onlineZoom = 13.0;
   trufiCfg.map.chooseLocationZoom = 16.0;
-  trufiCfg.map.center = LatLng(-17.39000, -66.15400);
-  trufiCfg.map.southWest = LatLng(-17.79300, -66.75000);
-  trufiCfg.map.northEast = LatLng(-16.90400, -65.67400);
+  trufiCfg.map.center = LatLng(48.7993, 9.2146);
+  trufiCfg.map.southWest =LatLng(48.7993, 9.2146);
+  trufiCfg.map.northEast = LatLng(48.7993, 9.2146);
 
   // Languages
   trufiCfg.languages.addAll([

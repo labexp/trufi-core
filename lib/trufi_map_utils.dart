@@ -23,13 +23,13 @@ offlineMapTileLayerOptions() {
 }
 
 tileHostingTileLayerOptions(String tilesEndpoint, { String tileProviderKey = "" }) {
-  var urlTemplate = tilesEndpoint + "/{z}/{x}/{y}@2x.png";
-  if (tileProviderKey != "") urlTemplate += "?key={key}";
+  var urlTemplate = tilesEndpoint + "/{z}/{x}/{y}";
+  if (tileProviderKey != "") urlTemplate += "?access_token={accessToken}";
 
   return TileLayerOptions(
     urlTemplate: urlTemplate,
     additionalOptions: {
-      'key': tileProviderKey,
+      'accessToken': tileProviderKey,
     },
   );
 }
