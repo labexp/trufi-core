@@ -322,7 +322,7 @@ class HomePageState extends State<HomePage>
       requestManagerCubit,
       appReviewCubit,
       TrufiLocalization.of(context),
-      await locationProviderCubit.getCurrentLocation(),
+      await locationProviderCubit.getCurrentLocation().catchError((_) => null),
       car: isCar,
     );
   }
