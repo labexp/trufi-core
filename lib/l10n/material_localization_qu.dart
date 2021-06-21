@@ -418,6 +418,12 @@ class QuMaterialLocalizations extends GlobalMaterialLocalizations {
 
   @override
   String get previousPageTooltip => r'Previous page';
+  
+  @override
+  String get firstPageTooltip => r'First page';
+
+  @override
+  String get lastPageTooltip => r'Last page';
 
   @override
   String get refreshIndicatorSemanticLabel => r'Refresh';
