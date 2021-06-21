@@ -1,6 +1,6 @@
 {
     "@@locale": "fr",
-    "@@last_modified": "2021-06-17T12:42:18+02:00",
+    "@@last_modified": "2021-06-20T23:48:51+02:00",
     "aboutContent": "Nous sommes une équipe bolivienne et internationale de personnes qui aiment et soutiennent les transports en commun. Nous avons développé cette application pour faciliter l'utilisation du système de transport en commun à Cochabamba et dans les environs.",
     "@aboutContent": {
         "description": "Text displayed on the about page"
@@ -36,6 +36,14 @@
     "appReviewDialogTitle": "Enjoying Trufi?",
     "@appReviewDialogTitle": {
         "description": "Title of the App Review Dialog used on Android"
+    },
+    "carParkCloseCapacityMessage": "This car park is close to capacity. Please allow additional time for you journey.",
+    "@carParkCloseCapacityMessage": {
+        "description": "This car park is close to capacity"
+    },
+    "carParkExcludeFull": "Exclude full car parks",
+    "@carParkExcludeFull": {
+        "description": "Car Park Exclude Full parks label"
     },
     "chooseLocationPageSubtitle": "Agrandir et déplacer la carte pour centrer le marqueur",
     "@chooseLocationPageSubtitle": {
@@ -446,6 +454,10 @@
     "@instructionVehicleSharingTaxi": {
         "description": "Vehicle name (Taxi)"
     },
+    "instructionVehicleTaxi": "Voiture",
+    "@instructionVehicleTaxi": {
+        "description": "Vehicle name (onCar)"
+    },
     "instructionVehicleTrufi": "Trufi",
     "@instructionVehicleTrufi": {
         "description": "Vehicle name (Trufi)"
@@ -464,6 +476,26 @@
             }
         },
         "description": "Itinerary instruction (walking)"
+    },
+    "itineraryBuyTicket": "Buy tickets",
+    "@itineraryBuyTicket": {
+        "description": "Itinerary Buy tickets label"
+    },
+    "itineraryMissingPrice": "No price information",
+    "@itineraryMissingPrice": {
+        "description": "Itinerary No price information label"
+    },
+    "itineraryPriceOnlyPublicTransport": "Price only valid for public transport part of the journey.",
+    "@itineraryPriceOnlyPublicTransport": {
+        "description": "Itinerary Price Only PublicTransport label"
+    },
+    "itineraryTicketsTitle": "Required tickets",
+    "@itineraryTicketsTitle": {
+        "description": "Itinerary Ticket Title label"
+    },
+    "itineraryTicketTitle": "Required ticket",
+    "@itineraryTicketTitle": {
+        "description": "Itinerary Ticket Title label"
     },
     "mapTypeLabel": "Map Type",
     "@mapTypeLabel": {

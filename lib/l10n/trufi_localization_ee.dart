@@ -37,6 +37,12 @@ class TrufiLocalizationEe extends TrufiLocalization {
   String get appReviewDialogTitle => 'trufi de vi nawoa';
 
   @override
+  String get carParkCloseCapacityMessage => 'This car park is close to capacity. Please allow additional time for you journey.';
+
+  @override
+  String get carParkExcludeFull => 'Exclude full car parks';
+
+  @override
   String get chooseLocationPageSubtitle => 'keke mortata la.';
 
   @override
@@ -316,12 +322,30 @@ class TrufiLocalizationEe extends TrufiLocalization {
   String get instructionVehicleSharingTaxi => 'lori didi';
 
   @override
+  String get instructionVehicleTaxi => 'lori';
+
+  @override
   String get instructionVehicleTrufi => 'Trufi';
 
   @override
   String instructionWalk(Object distance, Object duration, Object location) {
     return 'zor';
   }
+
+  @override
+  String get itineraryBuyTicket => 'Buy tickets';
+
+  @override
+  String get itineraryMissingPrice => 'No price information';
+
+  @override
+  String get itineraryPriceOnlyPublicTransport => 'Price only valid for public transport part of the journey.';
+
+  @override
+  String get itineraryTicketsTitle => 'Required tickets';
+
+  @override
+  String get itineraryTicketTitle => 'Required ticket';
 
   @override
   String get mapTypeLabel => 'Map Type';

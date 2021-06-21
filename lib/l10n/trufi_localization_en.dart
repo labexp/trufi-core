@@ -37,6 +37,12 @@ class TrufiLocalizationEn extends TrufiLocalization {
   String get appReviewDialogTitle => 'Enjoying Trufi?';
 
   @override
+  String get carParkCloseCapacityMessage => 'This car park is close to capacity. Please allow additional time for you journey.';
+
+  @override
+  String get carParkExcludeFull => 'Exclude full car parks';
+
+  @override
   String get chooseLocationPageSubtitle => 'Pan & zoom map under pin';
 
   @override
@@ -316,12 +322,30 @@ class TrufiLocalizationEn extends TrufiLocalization {
   String get instructionVehicleSharingTaxi => 'Taxi';
 
   @override
+  String get instructionVehicleTaxi => 'Taxi';
+
+  @override
   String get instructionVehicleTrufi => 'Trufi';
 
   @override
   String instructionWalk(Object distance, Object duration, Object location) {
     return 'Walk ${duration} (${distance}) to\n${location}';
   }
+
+  @override
+  String get itineraryBuyTicket => 'Buy tickets';
+
+  @override
+  String get itineraryMissingPrice => 'No price information';
+
+  @override
+  String get itineraryPriceOnlyPublicTransport => 'Price only valid for public transport part of the journey.';
+
+  @override
+  String get itineraryTicketsTitle => 'Required tickets';
+
+  @override
+  String get itineraryTicketTitle => 'Required ticket';
 
   @override
   String get mapTypeLabel => 'Map Type';
@@ -450,10 +474,10 @@ class TrufiLocalizationEn extends TrufiLocalization {
   String get settingPanelMyModesTransportBike => 'Bike';
 
   @override
-  String get settingPanelMyModesTransportBikeRide => 'Bike and Ride';
+  String get settingPanelMyModesTransportBikeRide => 'Bike & Ride';
 
   @override
-  String get settingPanelMyModesTransportParkRide => 'Park and Ride';
+  String get settingPanelMyModesTransportParkRide => 'Park & Ride';
 
   @override
   String get settingPanelTransportModes => 'Transport modes';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeleton_animation/skeleton_animation.dart';
 import 'package:trufi_core/blocs/configuration/configuration_cubit.dart';
 import 'package:trufi_core/entities/plan_entity/plan_entity.dart';
 import 'package:trufi_core/entities/plan_entity/utils/fare_utils.dart';
@@ -26,7 +27,7 @@ class LegOverviewAdvanced extends StatefulWidget {
 }
 
 class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
-  bool loading = true;
+  bool loading = false;
   String fetchError;
   List<FareComponent> fares;
   List<FareComponent> unknownFares;
@@ -35,8 +36,7 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((duration) {
-      // TODO need finished implement fetchFares
-      // loadData();
+      loadData();
     });
   }
 
@@ -46,6 +46,7 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
 
     final localization = TrufiLocalization.of(context);
     final compresedLegs = widget.itinerary.compressLegs;
+    // loadData();
     return Column(
       children: compresedLegs
           .asMap()
@@ -56,13 +57,8 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
                 children: [
                   if (index == 0)
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        if (fares != null)
-                          TicketInformation(
-                            legs: compresedLegs,
-                            fares: fares,
-                            unknownFares: unknownFares,
-                          ),
                         Row(
                           children: [
                             if (widget.onBackPressed != null)
@@ -79,6 +75,48 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
                         const Divider(
                           color: Colors.black,
                         ),
+                        if (loading)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                children: [
+                                  Skeleton(
+                                    padding: 2,
+                                    width: 170,
+                                    height: 18,
+                                    textColor: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  Skeleton(
+                                    padding: 2,
+                                    width: 170,
+                                    height: 18,
+                                    textColor: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                ],
+                              ),
+                              Flexible(
+                                child: Skeleton(
+                                  padding: 2,
+                                  height: 40,
+                                  textColor: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                              ),
+                            ],
+                          ),
+                        if (fares != null)
+                          TicketInformation(
+                            legs: compresedLegs,
+                            fares: fares,
+                            unknownFares: unknownFares,
+                          ),
+                        if (fares != null || loading)
+                          const Divider(
+                            color: Colors.grey,
+                          ),
                         if (itineraryLeg.transportMode == TransportMode.walk)
                           Column(
                             children: [
@@ -103,10 +141,11 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
                               leg: itineraryLeg,
                               isFirstTransport: true,
                               isNextTransport:
-                                  itineraryLeg.endTime.millisecondsSinceEpoch -
-                                          compresedLegs[index + 1]
-                                              .startTime
-                                              .millisecondsSinceEpoch >=
+                                  (itineraryLeg.endTime.millisecondsSinceEpoch -
+                                              compresedLegs[index + 1]
+                                                  .startTime
+                                                  .millisecondsSinceEpoch)
+                                          .abs() >=
                                       0)
                       ],
                     )
@@ -133,10 +172,11 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
                         TransportDash(
                             leg: itineraryLeg,
                             isNextTransport:
-                                itineraryLeg.endTime.millisecondsSinceEpoch -
-                                        compresedLegs[index + 1]
-                                            .startTime
-                                            .millisecondsSinceEpoch >=
+                                (itineraryLeg.endTime.millisecondsSinceEpoch -
+                                            compresedLegs[index + 1]
+                                                .startTime
+                                                .millisecondsSinceEpoch)
+                                        .abs() >=
                                     0),
                         if (itineraryLeg.endTime.millisecondsSinceEpoch <
                             compresedLegs[index + 1]
@@ -151,9 +191,11 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
                   if (index == compresedLegs.length - 1)
                     Column(
                       children: [
-                        if (itineraryLeg.transportMode == TransportMode.walk)
+                        if (itineraryLeg.transportMode == TransportMode.walk &&
+                            compresedLegs.length > 1)
                           WalkDash(leg: itineraryLeg)
-                        else
+                        else if (itineraryLeg.transportMode !=
+                            TransportMode.walk)
                           TransportDash(
                             leg: itineraryLeg,
                           ),
@@ -187,27 +229,30 @@ class _LegOverviewAdvancedState extends State<LegOverviewAdvanced> {
   }
 
   Future<void> loadData() async {
-    if (!mounted) return;
-    setState(() {
-      fetchError = null;
-      loading = true;
-    });
-    fetchFares(widget.itinerary).then((value) {
-      if (mounted) {
-        setState(() {
-          fares = getFares(value);
-          unknownFares = getUnknownFares(
-              value, fares, getRoutes(widget.itinerary.compressLegs));
-          loading = false;
-        });
-      }
-    }).catchError((error) {
-      if (mounted) {
-        setState(() {
-          fetchError = "$error";
-          loading = false;
-        });
-      }
-    });
+    if (widget.itinerary.compressLegs.isNotEmpty &&
+        widget.itinerary.compressLegs.any((leg) => leg.transitLeg)) {
+      if (!mounted) return;
+      setState(() {
+        fetchError = null;
+        loading = true;
+      });
+      fetchFares(widget.itinerary).then((value) {
+        if (mounted) {
+          setState(() {
+            fares = getFares(value);
+            unknownFares = getUnknownFares(
+                value, fares, getRoutes(widget.itinerary.compressLegs));
+            loading = false;
+          });
+        }
+      }).catchError((error) {
+        if (mounted) {
+          setState(() {
+            fetchError = "$error";
+            loading = false;
+          });
+        }
+      });
+    }
   }
 }

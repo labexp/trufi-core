@@ -170,7 +170,7 @@ class TransportSelector extends StatelessWidget {
                             modesTransport
                                 .parkRidePlan.itineraries[0].totalDistance),
                       ),
-                    if (modesTransport.existCarPlan &&
+                    if (modesTransport.existCarAndCarPark &&
                         payloadDataPlanState.includeCarSuggestions)
                       CardTransportMode(
                         onTap: () async {
@@ -178,17 +178,19 @@ class TransportSelector extends StatelessWidget {
                             builder: (BuildContext context) =>
                                 ModeTransportScreen(
                               title: localization.instructionVehicleCar,
-                              plan: modesTransport.carPlan,
+                              plan: modesTransport.carAndCarPark,
                             ),
                           ));
                         },
                         icon: carSvg(),
-                        title: durationToString(localization,
-                            modesTransport.carPlan.itineraries[0].durationTrip),
+                        title: durationToString(
+                            localization,
+                            modesTransport
+                                .carAndCarPark.itineraries[0].durationTrip),
                         subtitle: displayDistanceWithLocale(
                             localization,
                             modesTransport
-                                .carPlan.itineraries[0].totalDistance),
+                                .carAndCarPark.itineraries[0].totalDistance),
                       ),
                     if (modesTransport.existOnDemandTaxi)
                       CardTransportMode(
@@ -196,7 +198,7 @@ class TransportSelector extends StatelessWidget {
                           await Navigator.of(context).push(MaterialPageRoute(
                             builder: (BuildContext context) =>
                                 ModeTransportScreen(
-                              title: localization.instructionVehicleCar,
+                              title: localization.instructionVehicleTaxi,
                               plan: modesTransport.onDemandTaxiPlan,
                             ),
                           ));

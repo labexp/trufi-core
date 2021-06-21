@@ -37,6 +37,12 @@ class TrufiLocalizationEs extends TrufiLocalization {
   String get appReviewDialogTitle => 'Enjoying Trufi?';
 
   @override
+  String get carParkCloseCapacityMessage => 'This car park is close to capacity. Please allow additional time for you journey.';
+
+  @override
+  String get carParkExcludeFull => 'Exclude full car parks';
+
+  @override
   String get chooseLocationPageSubtitle => 'Amplía y mueve el mapa para centrar el marcador';
 
   @override
@@ -316,12 +322,30 @@ class TrufiLocalizationEs extends TrufiLocalization {
   String get instructionVehicleSharingTaxi => 'Bus';
 
   @override
+  String get instructionVehicleTaxi => 'Coche';
+
+  @override
   String get instructionVehicleTrufi => 'Trufi';
 
   @override
   String instructionWalk(Object distance, Object duration, Object location) {
     return 'Caminar ${duration} (${distance}) hasta\n${location}';
   }
+
+  @override
+  String get itineraryBuyTicket => 'Buy tickets';
+
+  @override
+  String get itineraryMissingPrice => 'No price information';
+
+  @override
+  String get itineraryPriceOnlyPublicTransport => 'Price only valid for public transport part of the journey.';
+
+  @override
+  String get itineraryTicketsTitle => 'Required tickets';
+
+  @override
+  String get itineraryTicketTitle => 'Required ticket';
 
   @override
   String get mapTypeLabel => 'Map Type';

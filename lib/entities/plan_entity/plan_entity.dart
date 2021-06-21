@@ -7,7 +7,9 @@ import 'package:trufi_core/entities/plan_entity/utils/geo_utils.dart';
 import 'package:trufi_core/l10n/trufi_localization.dart';
 import 'package:latlong/latlong.dart';
 import 'package:trufi_core/models/enums/enums_plan/enums_plan.dart';
+import 'package:trufi_core/services/models_otp/booking_info.dart';
 import 'package:trufi_core/services/models_otp/pickup_booking_info.dart';
+import 'package:trufi_core/services/models_otp/trip.dart';
 import 'package:trufi_core/widgets/map/utils/trufi_map_utils.dart';
 
 import 'agency_entity.dart';
@@ -24,6 +26,7 @@ part 'plan_location.dart';
 
 class PlanEntity {
   PlanEntity({
+    this.type,
     this.from,
     this.to,
     this.itineraries,
@@ -35,9 +38,11 @@ class PlanEntity {
   static const _from = "from";
   static const _plan = "plan";
   static const _to = "to";
+  static const _type = "type";
 
   final PlanLocation from;
   final PlanLocation to;
+  final String type;
   final List<PlanItinerary> itineraries;
   final PlanError error;
 
@@ -47,6 +52,7 @@ class PlanEntity {
     }
     if (json.containsKey(_error)) {
       return PlanEntity(
+          type: 'Error',
           error: PlanError.fromJson(json[_error] as Map<String, dynamic>));
     } else {
       final Map<String, dynamic> planJson = json[_plan] as Map<String, dynamic>;
@@ -61,6 +67,7 @@ class PlanEntity {
               )
               .toList() as List<PlanItinerary>,
         ),
+        type: planJson[_type] as String,
       );
     }
   }
@@ -70,12 +77,14 @@ class PlanEntity {
     PlanLocation to,
     List<PlanItinerary> itineraries,
     PlanError error,
+    String type,
   }) {
     return PlanEntity(
       from: from ?? this.from,
       to: to ?? this.to,
       itineraries: itineraries ?? this.itineraries,
       error: error ?? this.error,
+      type: type ?? this.type,
     );
   }
 
@@ -122,7 +131,8 @@ class PlanEntity {
               _from: from.toJson(),
               _to: to.toJson(),
               _itineraries:
-                  itineraries.map((itinerary) => itinerary.toJson()).toList()
+                  itineraries.map((itinerary) => itinerary.toJson()).toList(),
+              _type: type,
             }
           };
   }

@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:trufi_core/blocs/configuration/configuration_cubit.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trufi_core/blocs/home_page_cubit.dart';
+import 'package:trufi_core/blocs/payload_data_plan/payload_data_plan_cubit.dart';
 import 'package:trufi_core/entities/plan_entity/plan_entity.dart';
 import 'package:trufi_core/models/enums/enums_plan/enums_plan.dart';
 import 'package:trufi_core/l10n/trufi_localization.dart';
 import 'package:trufi_core/models/enums/enums_plan/icons/other_icons.dart';
+import 'package:trufi_core/pages/home/plan_map/widget/custom_text_button.dart';
+import 'package:trufi_core/pages/home/plan_map/widget/info_message.dart';
 import 'package:trufi_core/pages/home/plan_map/widget/transit_leg.dart';
 
 class TransportDash extends StatelessWidget {
@@ -26,6 +30,9 @@ class TransportDash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final configuration = context.read<ConfigurationCubit>().state;
+    final TrufiLocalization localization = TrufiLocalization.of(context);
+    final homePageCubit = context.read<HomePageCubit>();
+    final payloadDataPlanState = context.read<PayloadDataPlanCubit>().state;
     return Column(
       children: [
         DashLinePlace(
@@ -50,6 +57,7 @@ class TransportDash extends StatelessWidget {
             padding: const EdgeInsets.only(top: 15.0, bottom: 25.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TransitLeg(
                   leg: leg,
@@ -57,6 +65,26 @@ class TransportDash extends StatelessWidget {
                 if (configuration.planItineraryLegBuilder != null)
                   configuration.planItineraryLegBuilder(context, leg) ??
                       Container(),
+                if (leg?.toPlace?.vehicleParkingWithEntrance?.vehicleParking
+                            ?.tags !=
+                        null &&
+                    leg.toPlace.vehicleParkingWithEntrance.vehicleParking.tags
+                        .contains('state:few'))
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      InfoMessage(
+                          message: localization.carParkCloseCapacityMessage),
+                      CustomTextButton(
+                        text: localization.carParkExcludeFull,
+                        onPressed: () async {
+                          await homePageCubit.fetchPlanModeRidePark(
+                              localization, payloadDataPlanState);
+                        },
+                      ),
+                    ],
+                  )
               ],
             ),
           ),
@@ -115,11 +143,15 @@ class WaitDash extends StatelessWidget {
     final localization = TrufiLocalization.of(context);
     return Column(
       children: [
-        DashLinePlace(
-          date: legBefore.endTimeString.toString(),
-          location: legBefore.toPlace.name,
-          color: Colors.grey,
-        ),
+        if (legBefore.endTime.millisecondsSinceEpoch -
+                    legAfter.startTime.millisecondsSinceEpoch ==
+                0 ||
+            legBefore.transportMode == TransportMode.walk)
+          DashLinePlace(
+            date: legBefore.endTimeString.toString(),
+            location: legBefore.toPlace.name,
+            color: Colors.grey,
+          ),
         SeparatorPlace(
           color: Colors.grey,
           separator: Container(
