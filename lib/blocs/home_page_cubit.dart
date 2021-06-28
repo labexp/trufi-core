@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:async/async.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trufi_core/entities/ad_entity/ad_entity.dart';
+import 'package:trufi_core/entities/plan_entity/enum/plan_info_box.dart';
 import 'package:trufi_core/entities/plan_entity/plan_entity.dart';
+import 'package:trufi_core/entities/plan_entity/utils/geo_utils.dart';
 import 'package:trufi_core/l10n/trufi_localization.dart';
 import 'package:trufi_core/models/enums/enums_plan/enums_plan.dart';
 import 'package:trufi_core/models/map_route_state.dart';
@@ -109,23 +111,61 @@ class HomePageCubit extends Cubit<MapRouteState> {
     PayloadDataPlanState advancedOptions,
   }) async {
     if (state.toPlace != null && state.fromPlace != null) {
-      await updateMapRouteState(state.copyWithoutMap(
-        isFetching: true,
-        isFetchingModes: false,
-      ));
-      final PlanEntity planEntity = await _fetchPlan(
-        correlationId,
-        localization,
-        car: car,
-        advancedOptions: advancedOptions,
-      ).catchError((error) async {
-        await updateMapRouteState(state.copyWith(isFetching: false));
-        throw error;
-      });
+      PlanInfoBox planInfoBox;
+      if (insidePointInPolygon(state.fromPlace.latLng, areaPolygon)) {
+        planInfoBox = PlanInfoBox.originOutsideService;
+      } else if (insidePointInPolygon(state.toPlace.latLng, areaPolygon)) {
+        planInfoBox = PlanInfoBox.destinationOutsideService;
+      } else if (estimateDistance(
+              state.fromPlace.latLng, state.toPlace.latLng) <
+          PayloadDataPlanState.minDistanceBetweenFromAndTo) {
+        if (state.toPlace.latLng == state.fromPlace.latLng) {
+          planInfoBox = PlanInfoBox.noRouteOriginSameAsDestination;
+        } else {
+          planInfoBox = PlanInfoBox.noRouteOriginNearDestination;
+        }
+      }
+
+      if (planInfoBox != null) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        await updateMapRouteState(
+          state.copyWith(
+            isFetching: false,
+            showSuccessAnimation: true,
+            plan: PlanEntity(
+              planInfoBox: planInfoBox,
+              itineraries: const [],
+              to: PlanLocation.fromTrufiLocation(state.toPlace),
+              from: PlanLocation.fromTrufiLocation(state.fromPlace),
+            ),
+          ),
+        );
+        if (planInfoBox == PlanInfoBox.originOutsideService ||
+            planInfoBox == PlanInfoBox.destinationOutsideService) {
+          return;
+        }
+      } else {
+        await updateMapRouteState(state.copyWithoutMap(
+          isFetching: true,
+          isFetchingModes: false,
+        ));
+        final PlanEntity planEntity = await _fetchPlan(
+          correlationId,
+          localization,
+          car: car,
+          advancedOptions: advancedOptions,
+        ).catchError((error) async {
+          await updateMapRouteState(state.copyWith(isFetching: false));
+          throw error;
+        });
+
+        await updateMapRouteState(state.copyWith(
+          plan: planEntity,
+          isFetching: false,
+          showSuccessAnimation: true,
+        ));
+      }
       await updateMapRouteState(state.copyWith(
-        plan: planEntity,
-        isFetching: false,
-        showSuccessAnimation: true,
         isFetchingModes: true,
       ));
       final modesTransportEntity = await _fetchPlanModesState(
@@ -136,8 +176,38 @@ class HomePageCubit extends Cubit<MapRouteState> {
         await updateMapRouteState(state.copyWith(isFetchingModes: false));
         throw error;
       });
-      await updateMapRouteState(state.copyWith(
-          modesTransport: modesTransportEntity, isFetchingModes: false));
+      PlanInfoBox auxPlanInfoBox;
+      if (modesTransportEntity.existWalkPlan ||
+          modesTransportEntity.existBikePlan) {
+        if (modesTransportEntity.existWalkPlan &&
+            !modesTransportEntity.existBikePlan) {
+          auxPlanInfoBox = PlanInfoBox.onlyWalkingRoutes;
+        } else if (!modesTransportEntity.existWalkPlan &&
+            modesTransportEntity.existBikePlan) {
+          auxPlanInfoBox = PlanInfoBox.onlyCyclingRoutes;
+        } else {
+          auxPlanInfoBox = PlanInfoBox.onlyWalkingCyclingRoutes;
+        }
+      } else {
+        if (initPayloadDataPlanState == advancedOptions) {
+          auxPlanInfoBox = PlanInfoBox.noRouteMsgWithChanges;
+        } else {
+          auxPlanInfoBox = PlanInfoBox.noRouteMsg;
+        }
+      }
+
+      await updateMapRouteState(
+        state.copyWith(
+          plan: planInfoBox == null &&
+                  auxPlanInfoBox != null &&
+                  state.plan.isOnlyWalk
+              ? state.plan.copyWith(planInfoBox: auxPlanInfoBox)
+              : null,
+          modesTransport: modesTransportEntity,
+          isFetchingModes: false,
+          isFetching: false,
+        ),
+      );
     }
   }
 
@@ -159,6 +229,7 @@ class HomePageCubit extends Cubit<MapRouteState> {
                     correlationId: correlationId,
                     advancedOptions: advancedOptions
                         .copyWith(transportModes: [TransportMode.car]),
+                    localeName: localization.localeName,
                   )
                 : requestManager.fetchCarPlan(
                     state.fromPlace,
@@ -169,10 +240,12 @@ class HomePageCubit extends Cubit<MapRouteState> {
         : CancelableOperation.fromFuture(
             () {
               return requestManager.fetchAdvancedPlan(
-                  from: state.fromPlace,
-                  to: state.toPlace,
-                  correlationId: correlationId,
-                  advancedOptions: advancedOptions);
+                from: state.fromPlace,
+                to: state.toPlace,
+                correlationId: correlationId,
+                advancedOptions: advancedOptions,
+                localeName: localization.localeName,
+              );
             }(),
           );
     final PlanEntity plan = await currentFetchPlanOperation.valueOrCancellation(
@@ -208,7 +281,8 @@ class HomePageCubit extends Cubit<MapRouteState> {
             from: state.fromPlace,
             to: state.toPlace,
             correlationId: correlationId,
-            advancedOptions: advancedOptions);
+            advancedOptions: advancedOptions,
+            localeName: localization.localeName);
       }(),
     );
     final ModesTransportEntity plan =

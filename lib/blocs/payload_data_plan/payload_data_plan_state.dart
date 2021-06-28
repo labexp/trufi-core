@@ -17,11 +17,12 @@ final initPayloadDataPlanState = PayloadDataPlanState(
 
 @immutable
 class PayloadDataPlanState extends Equatable {
-  static const int maxWalkDistance = 15000;
+  static const int maxWalkDistance = 3000;
   static const int suggestCarMinDistance = 2000;
   static const int suggestBikeMaxDistance = 30000;
   static const int suggestBikeAndPublicMaxDistance = 15000;
   static const int bikeAndPublicMaxWalkDistance = 15000;
+  static const int minDistanceBetweenFromAndTo = 20;
 
   static const String _typeWalkingSpeed = "typeWalkingSpeed";
   static const String _avoidWalking = "avoidWalking";

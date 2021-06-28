@@ -55,7 +55,7 @@ class GraphQLPlanRepository {
     @required TrufiLocation fromLocation,
     @required TrufiLocation toLocation,
     @required PayloadDataPlanState advancedOptions,
-    String locale,
+    @required String locale,
     bool defaultFecth = false,
   }) async {
     final transportsMode =
@@ -112,7 +112,7 @@ class GraphQLPlanRepository {
         'unpreferred': {'useUnpreferredRoutesPenalty': 1200},
         'allowedBikeRentalNetworks':
             parseBikeRentalNetworks(advancedOptions.bikeRentalNetworks),
-        'locale': locale ?? 'en',
+        'locale': locale ?? 'de',
       },
     );
     final planAdvancedData = await client.query(planAdvancedQuery);
@@ -133,10 +133,10 @@ class GraphQLPlanRepository {
     @required TrufiLocation fromLocation,
     @required TrufiLocation toLocation,
     @required PayloadDataPlanState advancedOptions,
-    String locale,
+    @required String locale,
   }) async {
     final linearDistance =
-        estimateItineraryDistance(fromLocation.latLng, toLocation.latLng);
+        estimateDistance(fromLocation.latLng, toLocation.latLng);
     final dateNow = DateTime.now();
     final date = advancedOptions?.date ?? dateNow;
     final shouldMakeAllQuery = !advancedOptions.isFreeParkToCarPark &&
@@ -188,12 +188,13 @@ class GraphQLPlanRepository {
           'triangle': {...OptimizeType.triangle.value},
           'itineraryFiltering': 1.5,
           'unpreferred': {'useUnpreferredRoutesPenalty': 1200},
-          'locale': locale ?? 'en',
+          'locale': locale ?? 'de',
           'bikeAndPublicMaxWalkDistance':
               PayloadDataPlanState.bikeAndPublicMaxWalkDistance,
           'bikeAndPublicModes':
               parseBikeAndPublicModes(advancedOptions.transportModes),
           'bikeParkModes': parsebikeParkModes(advancedOptions.transportModes),
+          'carMode': parseCarMode(toLocation.latLng),
           'bikeandPublicDisableRemainingWeightHeuristic': false,
           'shouldMakeWalkQuery': shouldMakeAllQuery &&
               !advancedOptions.wheelchair &&
@@ -202,10 +203,7 @@ class GraphQLPlanRepository {
               !advancedOptions.wheelchair &&
               linearDistance < PayloadDataPlanState.suggestBikeMaxDistance &&
               advancedOptions.includeBikeSuggestions,
-          'shouldMakeCarQuery': shouldMakeAllQuery &&
-              advancedOptions.includeCarSuggestions &&
-              linearDistance > PayloadDataPlanState.suggestCarMinDistance,
-          'shouldMakeCarParkQuery':
+          'shouldMakeCarQuery':
               (advancedOptions.isFreeParkToCarPark || shouldMakeAllQuery) &&
                   advancedOptions.includeCarSuggestions &&
                   linearDistance > PayloadDataPlanState.suggestCarMinDistance,
