@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trufi_core/models/enums/enums_plan/enums_plan.dart';
+import 'package:trufi_core/models/enums/enums_plan/icons/icons_transport_modes.dart';
 
 class RouteNumber extends StatelessWidget {
   final TransportMode transportMode;
@@ -9,6 +10,7 @@ class RouteNumber extends StatelessWidget {
   final String distance;
   final String duration;
   final Widget icon;
+  final Widget textContainer;
   final String mode;
 
   const RouteNumber({
@@ -20,6 +22,7 @@ class RouteNumber extends StatelessWidget {
     this.distance,
     this.duration,
     this.icon,
+    this.textContainer,
     this.mode,
   }) : super(key: key);
 
@@ -60,7 +63,8 @@ class RouteNumber extends StatelessWidget {
                                   ? transportMode.color
                                   : Colors.white)),
                     if (transportMode != TransportMode.walk &&
-                        transportMode != TransportMode.bicycle)
+                        transportMode != TransportMode.bicycle &&
+                        transportMode != TransportMode.carPool)
                       Container(
                         padding: const EdgeInsets.only(left: 5),
                         child: Text(
@@ -69,22 +73,43 @@ class RouteNumber extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                      )
+                      ),
                   ],
                 ),
               ),
+              if (transportMode == TransportMode.carPool)
+                Padding(
+                  padding: const EdgeInsets.only(left: 4.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: carpoolFgSvg,
+                      ),
+                      const SizedBox(width: 2),
+                      SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: carpoolAdacSvg,
+                      )
+                    ],
+                  ),
+                ),
               if (transportMode != TransportMode.bicycle &&
-                  transportMode != TransportMode.car)
+                  transportMode != TransportMode.car &&
+                  textContainer == null)
                 Container(
                   margin: const EdgeInsets.only(left: 8),
-                  width: 150,
+                  padding: const EdgeInsets.all(2),
+                  width: 176,
                   child: Text(
                     tripHeadSing ?? '',
                     style: theme.primaryTextTheme.bodyText1,
                     overflow: TextOverflow.visible,
                   ),
                 )
-              else
+              else if (textContainer == null)
                 Row(
                   children: [
                     const SizedBox(width: 8),
@@ -98,12 +123,27 @@ class RouteNumber extends StatelessWidget {
                       style: theme.primaryTextTheme.bodyText1,
                     ),
                   ],
+                )
+              else
+                Container(
+                  width: 210,
+                  padding: const EdgeInsets.only(top: 5, left: 5),
+                  child: textContainer,
                 ),
             ],
           ),
         ),
         if (transportMode != TransportMode.bicycle &&
             transportMode != TransportMode.car)
+          Padding(
+            padding: const EdgeInsets.only(top: 5, left: 5),
+            child: Text(
+              '${distance ?? ''} ${duration != null ? "($duration)" : ''} ',
+              style: theme.primaryTextTheme.bodyText1
+                  .copyWith(fontSize: 13, color: Colors.grey[700]),
+            ),
+          ),
+        if (transportMode == TransportMode.bicycle && textContainer != null)
           Padding(
             padding: const EdgeInsets.only(top: 5, left: 5),
             child: Text(

@@ -1,6 +1,6 @@
 {
     "@@locale": "qu",
-    "@@last_modified": "2021-06-28T17:04:20+02:00",
+    "@@last_modified": "2021-06-30T23:40:19+02:00",
     "aboutContent": "Bolivia suyumantapacha waq jawa suyukunawan jukchasqa kayku, munayku chanta kallpanchayku ima transporte publico ñisqata. Kay thatkichiy ruwasqa kachkan Qhuchapampa jap’iypi, ukhupi jawaman ima, aswan sasata ch’usanaykipaq.",
     "@aboutContent": {
         "description": "Text displayed on the about page"
@@ -36,6 +36,18 @@
     "appReviewDialogTitle": "Enjoying Trufi?",
     "@appReviewDialogTitle": {
         "description": "Title of the App Review Dialog used on Android"
+    },
+    "bikeRentalBikeStation": "Bike station",
+    "@bikeRentalBikeStation": {
+        "description": "Common Text Bike station"
+    },
+    "bikeRentalFetchRentalBike": "Fetch a rental bike:",
+    "@bikeRentalFetchRentalBike": {
+        "description": "Common Text Fetch a rental bike."
+    },
+    "bikeRentalNetworkFreeFloating": "Destination is not a designated drop-off area. Rental cannot be completed here. Please check terms & conditions for additional fees.",
+    "@bikeRentalNetworkFreeFloating": {
+        "description": "Text Bike Rental Network message FreeFloating"
     },
     "carParkCloseCapacityMessage": "This car park is close to capacity. Please allow additional time for you journey.",
     "@carParkCloseCapacityMessage": {
@@ -88,6 +100,10 @@
     "commonDestination": "Mayman",
     "@commonDestination": {
         "description": "Destination field label"
+    },
+    "commonDetails": "Walk",
+    "@commonDetails": {
+        "description": "General details label"
     },
     "commonError": "Pantay",
     "@commonError": {
@@ -319,6 +335,14 @@
     "@feedbackTitle": {
         "description": "Title displayed on the feedback page"
     },
+    "fetchMoreItinerariesEarlierDepartures": "Earlier departures",
+    "@fetchMoreItinerariesEarlierDepartures": {
+        "description": "Text about extra fetch itineraries for Earlier departure title "
+    },
+    "fetchMoreItinerariesLaterDeparturesTitle": "Later departures",
+    "@fetchMoreItinerariesLaterDeparturesTitle": {
+        "description": "Text about extra fetch itineraries for later departure title "
+    },
     "followOnFacebook": "Follow us on Facebook",
     "@followOnFacebook": {
         "description": "Facebook menu item"
@@ -536,6 +560,14 @@
     "itineraryPriceOnlyPublicTransport": "Price only valid for public transport part of the journey.",
     "@itineraryPriceOnlyPublicTransport": {
         "description": "Itinerary Price Only PublicTransport label"
+    },
+    "itinerarySummaryBikeAndPublicRailSubwayTitle": "Take your bike with you on the train or to metro",
+    "@itinerarySummaryBikeAndPublicRailSubwayTitle": {
+        "description": "Text title itinerary Summary Bike And Public Rail Subway"
+    },
+    "itinerarySummaryBikeParkTitle": "Leave your bike at a Park & Ride",
+    "@itinerarySummaryBikeParkTitle": {
+        "description": "Text title itinerary Summary Bike Park Title"
     },
     "itineraryTicketsTitle": "Required tickets",
     "@itineraryTicketsTitle": {

@@ -37,6 +37,15 @@ class TrufiLocalizationDe extends TrufiLocalization {
   String get appReviewDialogTitle => 'Magst du Trufi?';
 
   @override
+  String get bikeRentalBikeStation => 'Leihrad-Station';
+
+  @override
+  String get bikeRentalFetchRentalBike => 'Leihrad ausleihen:';
+
+  @override
+  String get bikeRentalNetworkFreeFloating => 'Ziel ist keine Rückgabestation. Ausleihe kann hier nicht abgeschlossen werden. Anbieterabhängig fallen weiter Gebühren bis zur Rückgabe an einer Station an.';
+
+  @override
   String get carParkCloseCapacityMessage => 'Dieser Parkplatz ist fast ausgebucht. Bitte planen Sie zusätzliche Zeit für Ihre Anfahrt ein.';
 
   @override
@@ -74,6 +83,9 @@ class TrufiLocalizationDe extends TrufiLocalization {
 
   @override
   String get commonDestination => 'Fahrtziel';
+
+  @override
+  String get commonDetails => 'Details';
 
   @override
   String get commonError => 'Fehler';
@@ -241,6 +253,12 @@ class TrufiLocalizationDe extends TrufiLocalization {
   String get feedbackTitle => 'E-Mail senden';
 
   @override
+  String get fetchMoreItinerariesEarlierDepartures => 'Früher';
+
+  @override
+  String get fetchMoreItinerariesLaterDeparturesTitle => 'Später';
+
+  @override
   String get followOnFacebook => 'Folge uns auf Facebook';
 
   @override
@@ -376,6 +394,12 @@ class TrufiLocalizationDe extends TrufiLocalization {
 
   @override
   String get itineraryPriceOnlyPublicTransport => 'Preisauskunft nur für ÖPNV gültig.';
+
+  @override
+  String get itinerarySummaryBikeAndPublicRailSubwayTitle => 'Nehmen Sie Ihr Rad mit in den Zug oder die bahn';
+
+  @override
+  String get itinerarySummaryBikeParkTitle => 'Fahrrad abstellen und weiterfahren';
 
   @override
   String get itineraryTicketsTitle => 'Benötigte Fahrkarten';

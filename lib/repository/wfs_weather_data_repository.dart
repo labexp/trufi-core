@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:trufi_core/repository/entities/weather_info.dart';
 import 'package:trufi_core/repository/weather_data.dart';
 import 'package:xml/xml.dart';
@@ -45,7 +45,7 @@ class WFSWeatherDataRepository extends WeatherData {
         .toList();
 
     return WeatherInfo(
-      parameterValues[0],
+      double.tryParse(parameterValues[0]).toStringAsFixed(0),
       parameterValues[1],
       parameterValues[2],
     );

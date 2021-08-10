@@ -37,6 +37,15 @@ class TrufiLocalizationIt extends TrufiLocalization {
   String get appReviewDialogTitle => 'Enjoying Trufi?';
 
   @override
+  String get bikeRentalBikeStation => 'Bike station';
+
+  @override
+  String get bikeRentalFetchRentalBike => 'Fetch a rental bike:';
+
+  @override
+  String get bikeRentalNetworkFreeFloating => 'Destination is not a designated drop-off area. Rental cannot be completed here. Please check terms & conditions for additional fees.';
+
+  @override
   String get carParkCloseCapacityMessage => 'This car park is close to capacity. Please allow additional time for you journey.';
 
   @override
@@ -74,6 +83,9 @@ class TrufiLocalizationIt extends TrufiLocalization {
 
   @override
   String get commonDestination => 'Destinazione';
+
+  @override
+  String get commonDetails => 'Walk';
 
   @override
   String get commonError => 'Errore';
@@ -241,6 +253,12 @@ class TrufiLocalizationIt extends TrufiLocalization {
   String get feedbackTitle => 'Inviaci un\'E-mail';
 
   @override
+  String get fetchMoreItinerariesEarlierDepartures => 'Earlier departures';
+
+  @override
+  String get fetchMoreItinerariesLaterDeparturesTitle => 'Later departures';
+
+  @override
   String get followOnFacebook => 'Follow us on Facebook';
 
   @override
@@ -376,6 +394,12 @@ class TrufiLocalizationIt extends TrufiLocalization {
 
   @override
   String get itineraryPriceOnlyPublicTransport => 'Price only valid for public transport part of the journey.';
+
+  @override
+  String get itinerarySummaryBikeAndPublicRailSubwayTitle => 'Take your bike with you on the train or to metro';
+
+  @override
+  String get itinerarySummaryBikeParkTitle => 'Leave your bike at a Park & Ride';
 
   @override
   String get itineraryTicketsTitle => 'Required tickets';

@@ -15,6 +15,7 @@ fragment ItineraryLine_legs on Leg {
   route {
     shortName
     color
+    url
     agency {
       name
       id
@@ -36,6 +37,7 @@ fragment ItineraryLine_legs on Leg {
     }
     stop {
       gtfsId
+      name
       code
       platformCode
       id
@@ -56,6 +58,7 @@ fragment ItineraryLine_legs on Leg {
     }
     stop {
       gtfsId
+      name
       code
       platformCode
       id
@@ -115,6 +118,7 @@ fragment ItinerarySummaryListContainer_itineraries on Itinerary {
       }
     }
     route {
+      url
       mode
       shortName
       color
@@ -146,6 +150,7 @@ fragment ItinerarySummaryListContainer_itineraries on Itinerary {
         realtimeState
         stop {
           gtfsId
+          name
           id
         }
         pickupType
@@ -177,6 +182,7 @@ fragment ItinerarySummaryListContainer_itineraries on Itinerary {
     to {
       stop {
         gtfsId
+        name
         zoneId
         alerts {
           alertSeverityLevel
@@ -258,6 +264,7 @@ fragment ItineraryTab_itinerary on Itinerary {
         platformCode
         vehicleMode
         zoneId
+        name
         alerts {
           alertSeverityLevel
           effectiveEndDate
@@ -299,6 +306,7 @@ fragment ItineraryTab_itinerary on Itinerary {
       }
       stop {
         gtfsId
+        name
         code
         platformCode
         zoneId
@@ -381,6 +389,7 @@ fragment ItineraryTab_itinerary on Itinerary {
       type
       longName
       desc
+      url
       agency {
         gtfsId
         fareUrl
@@ -425,6 +434,7 @@ fragment ItineraryTab_itinerary on Itinerary {
         realtimeState
         stop {
           gtfsId
+          name
           id
         }
       }
@@ -468,6 +478,7 @@ fragment RouteLine_pattern on Pattern {
     mode
     color
     id
+    url
   }
   stops {
     lat
@@ -573,6 +584,7 @@ fragment SummaryPage_viewer_3ZG8s4 on QueryType {
         }
         route {
           gtfsId
+          url
           id
         }
         trip {
@@ -594,6 +606,7 @@ fragment SummaryPage_viewer_3ZG8s4 on QueryType {
           lon
           stop {
             gtfsId
+            name
             zoneId
             id
           }
@@ -606,6 +619,7 @@ fragment SummaryPage_viewer_3ZG8s4 on QueryType {
         to {
           stop {
             gtfsId
+            name
             zoneId
             id
           }
@@ -644,6 +658,7 @@ fragment SummaryPlanContainer_itineraries on Itinerary {
       points
     }
     route {
+      url
       gtfsId
       id
     }

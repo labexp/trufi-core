@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:trufi_core/blocs/configuration/configuration_cubit.dart';
 import 'package:trufi_core/blocs/configuration/models/transport_configuration.dart';
 import 'package:trufi_core/composite_subscription.dart';
@@ -77,12 +77,20 @@ class PlanMapPageState extends State<PlanMapPage>
         });
       }),
     );
+    _subscriptions.add(
+      widget.planPageController.outSelectePosition.listen((
+        position,
+      ) {
+        _trufiMapController.move(
+            center: position, zoom: 14, tickerProvider: this);
+      }),
+    );
   }
 
   @override
   void dispose() {
-    _subscriptions.cancel();
-    _trufiMapController.dispose();
+    _subscriptions?.cancel();
+    _trufiMapController?.dispose();
     super.dispose();
   }
 
@@ -91,8 +99,7 @@ class PlanMapPageState extends State<PlanMapPage>
     final Locale locale = Localizations.localeOf(context);
 
     final trufiConfiguration = context.read<ConfigurationCubit>().state;
-
-    if (_mapController.ready) {
+    _mapController.onReady.then((value) {
       if (_data.needsCameraUpdate && _data.selectedBounds.isValid) {
         _trufiMapController.fitBounds(
           bounds: _data.selectedBounds,
@@ -100,7 +107,7 @@ class PlanMapPageState extends State<PlanMapPage>
         );
         _data.needsCameraUpdate = false;
       }
-    }
+    });
     return Stack(
       children: <Widget>[
         TrufiMap(
@@ -113,7 +120,8 @@ class PlanMapPageState extends State<PlanMapPage>
               _data.unselectedPolylinesLayer,
               _data.unselectedMarkersLayer,
               _data.selectedPolylinesLayer,
-              _data.selectedMarkersLayer,
+              if (_data.selectedMarkersLayer.markers.isNotEmpty)
+                _data.selectedMarkersLayer,
               _data.fromMarkerLayer,
               // _trufiMapController.yourLocationLayer,
               _data.toMarkerLayer,
@@ -276,7 +284,7 @@ class PlanMapPageStateData {
   }
 
   MarkerLayerOptions get selectedMarkersLayer {
-    return MarkerLayerOptions(markers: _selectedMarkers);
+    return MarkerLayerOptions(markers: [..._selectedMarkers, _fromMarker]);
   }
 
   PolylineLayerOptions get selectedPolylinesLayer {
@@ -368,62 +376,64 @@ class PlanMapPageStateData {
         final List<Marker> markers = [];
         final List<PolylineWithMarkers> polylinesWithMarkers = [];
         final bool isSelected = itinerary == selectedItinerary;
-        final List<PlanItineraryLeg> compressedLegs = itinerary.compressLegs;
+        final bool showOnlySelected = selectedItinerary.isOnlyShowItinerary;
+        if (!showOnlySelected || isSelected) {
+          final List<PlanItineraryLeg> compressedLegs = itinerary.compressLegs;
+          for (int i = 0; i < compressedLegs.length; i++) {
+            final PlanItineraryLeg leg = compressedLegs[i];
+            // Polyline
+            final List<LatLng> points = leg.accumulatedPoints.isNotEmpty
+                ? leg.accumulatedPoints
+                : decodePolyline(leg.points);
+            final Color color = isSelected
+                ? leg.transportMode == TransportMode.bicycle &&
+                        leg.fromPlace.bikeRentalStation != null
+                    ? getBikeRentalNetwork(
+                            leg.fromPlace.bikeRentalStation.networks[0])
+                        .color
+                    : (leg?.route?.color != null
+                        ? Color(int.tryParse("0xFF${leg.route.color}"))
+                        : leg.transportMode.color)
+                : Colors.grey;
+            final Polyline polyline = Polyline(
+              points: points,
+              color: color,
+              strokeWidth: isSelected ? 6.0 : 3.0,
+              isDotted: leg.transportMode == TransportMode.walk,
+            );
 
-        for (int i = 0; i < compressedLegs.length; i++) {
-          final PlanItineraryLeg leg = compressedLegs[i];
-          // Polyline
-          final List<LatLng> points = leg.accumulatedPoints.isNotEmpty
-              ? leg.accumulatedPoints
-              : decodePolyline(leg.points);
-          final Color color = isSelected
-              ? leg.transportMode == TransportMode.bicycle &&
-                      leg.fromPlace.bikeRentalStation != null
-                  ? getBikeRentalNetwork(
-                          leg.fromPlace.bikeRentalStation.networks[0])
-                      .color
-                  : (leg?.route?.color != null
+            // Transfer marker
+            if (isSelected &&
+                i < compressedLegs.length - 1 &&
+                polyline.points.isNotEmpty) {
+              markers.add(
+                buildTransferMarker(
+                  polyline.points[polyline.points.length - 1],
+                ),
+              );
+            }
+
+            // Bus marker
+            if (showTransportMarker &&
+                leg.transportMode != TransportMode.walk &&
+                leg.transportMode != TransportMode.bicycle &&
+                leg.transportMode != TransportMode.car) {
+              markers.add(
+                buildBusMarker(
+                  midPointForPolyline(polyline),
+                  leg?.route?.color != null && isSelected
                       ? Color(int.tryParse("0xFF${leg.route.color}"))
-                      : leg.transportMode.color)
-              : Colors.grey;
-          final Polyline polyline = Polyline(
-            points: points,
-            color: color,
-            strokeWidth: isSelected ? 6.0 : 3.0,
-            isDotted: leg.transportMode == TransportMode.walk,
-          );
-
-          // Transfer marker
-          if (isSelected &&
-              i < compressedLegs.length - 1 &&
-              polyline.points.isNotEmpty) {
-            markers.add(
-              buildTransferMarker(
-                polyline.points[polyline.points.length - 1],
-              ),
-            );
+                      : Colors.grey,
+                  leg,
+                  icon: (leg?.route?.type ?? 0) == 715
+                      ? onDemandTaxiSvg(color: 'FFFFFF')
+                      : null,
+                  onTap: () => onTap(itinerary),
+                ),
+              );
+            }
+            polylinesWithMarkers.add(PolylineWithMarkers(polyline, markers));
           }
-
-          // Bus marker
-          if (showTransportMarker &&
-              leg.transportMode != TransportMode.walk &&
-              leg.transportMode != TransportMode.bicycle &&
-              leg.transportMode != TransportMode.car) {
-            markers.add(
-              buildBusMarker(
-                midPointForPolyline(polyline),
-                leg?.route?.color != null && isSelected
-                    ? Color(int.tryParse("0xFF${leg.route.color}"))
-                    : Colors.grey,
-                leg,
-                icon: (leg?.route?.type ?? 0) == 715
-                    ? onDemandTaxiSvg(color: 'FFFFFF')
-                    : null,
-                onTap: () => onTap(itinerary),
-              ),
-            );
-          }
-          polylinesWithMarkers.add(PolylineWithMarkers(polyline, markers));
         }
         itineraries.addAll({itinerary: polylinesWithMarkers});
       }

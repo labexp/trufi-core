@@ -1,12 +1,14 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 import 'package:trufi_core/blocs/configuration/configuration_cubit.dart';
 import 'package:trufi_core/blocs/home_page_cubit.dart';
 import 'package:trufi_core/composite_subscription.dart';
 import 'package:trufi_core/entities/ad_entity/ad_entity.dart';
 import 'package:trufi_core/entities/plan_entity/plan_entity.dart';
+import 'package:trufi_core/models/map_route_state.dart';
 import 'package:trufi_core/pages/home/plan_map/plan_map.dart';
 import 'package:trufi_core/trufi_app.dart';
 import 'package:trufi_core/widgets/custom_scrollable_container.dart';
@@ -26,6 +28,7 @@ class PlanPageController {
   final AdEntity ad;
 
   final _selectedItineraryController = rx.BehaviorSubject<PlanItinerary>();
+  final _positionMap = rx.BehaviorSubject<LatLng>();
   final _subscriptions = CompositeSubscription();
 
   PlanItinerary _selectedItinerary;
@@ -43,71 +46,62 @@ class PlanPageController {
     return _selectedItineraryController.stream;
   }
 
+  Sink<LatLng> get inSelectePosition {
+    return _positionMap.sink;
+  }
+
+  Stream<LatLng> get outSelectePosition {
+    return _positionMap.stream;
+  }
+
   PlanItinerary get selectedItinerary => _selectedItinerary;
 }
 
-class PlanPage extends StatelessWidget {
+class PlanPage extends StatefulWidget {
   final PlanEntity plan;
   final AdEntity ad;
   final LocaleWidgetBuilder customOverlayWidget;
   final WidgetBuilder customBetweenFabWidget;
 
   const PlanPage(
-      this.plan, this.ad, this.customOverlayWidget, this.customBetweenFabWidget,
-      {Key key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final homePageState = context.watch<HomePageCubit>().state;
-    return CurrentPlanPage(
-      PlanPageController(plan, ad),
-      customOverlayWidget,
-      customBetweenFabWidget,
-      key: Key('firstFetchPlan ${homePageState.isFetchingModes}'),
-    );
-  }
-}
-
-class CurrentPlanPage extends StatefulWidget {
-  final PlanPageController planPageController;
-  final LocaleWidgetBuilder customOverlayWidget;
-  final WidgetBuilder customBetweenFabWidget;
-
-  const CurrentPlanPage(this.planPageController, this.customOverlayWidget,
-      this.customBetweenFabWidget,
-      {Key key})
-      : super(key: key);
+    this.plan,
+    this.ad,
+    this.customOverlayWidget,
+    this.customBetweenFabWidget, {
+    Key key,
+  }) : super(key: key);
 
   @override
   CurrentPlanPageState createState() => CurrentPlanPageState();
 }
 
-class CurrentPlanPageState extends State<CurrentPlanPage>
+class CurrentPlanPageState extends State<PlanPage>
     with TickerProviderStateMixin {
+  PlanPageController _planPageController;
   TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.planPageController.plan.itineraries.isNotEmpty) {
-      widget.planPageController.inSelectedItinerary.add(
-        widget.planPageController.plan.itineraries.first,
+    _planPageController = PlanPageController(widget.plan, widget.ad);
+    if (_planPageController.plan.itineraries.isNotEmpty) {
+      _planPageController.inSelectedItinerary.add(
+        _planPageController.plan.itineraries.first,
       );
     }
     _tabController = TabController(
-      length: widget.planPageController.plan.itineraries.length,
+      length: _planPageController.plan.itineraries.length,
       vsync: this,
     )..addListener(() {
-        widget.planPageController.inSelectedItinerary.add(
-          widget.planPageController.plan.itineraries[_tabController.index],
+        _planPageController.inSelectedItinerary.add(
+          _planPageController.plan.itineraries[_tabController.index],
         );
       });
   }
 
   @override
   void dispose() {
-    widget.planPageController?.dispose();
+    _planPageController?.dispose();
     _tabController?.dispose();
     super.dispose();
   }
@@ -116,19 +110,31 @@ class CurrentPlanPageState extends State<CurrentPlanPage>
   Widget build(BuildContext context) {
     final cfg = context.read<ConfigurationCubit>().state;
     final children = <Widget>[
-      CustomScrollableContainer(
-        openedPosition: 200,
-        body: PlanMapPage(
-          planPageController: widget.planPageController,
-          customOverlayWidget: widget.customOverlayWidget,
-          customBetweenFabWidget: widget.customBetweenFabWidget,
-          markerConfiguration: cfg.markers,
-          transportConfiguration: cfg.transportConf,
-        ),
-        panel: CustomItinerary(
-          planPageController: widget.planPageController,
-        ),
-      ),
+      BlocBuilder<HomePageCubit, MapRouteState>(
+        builder: (context, state) {
+          if ((state.isFetchEarlier || state.isFetchLater) &&
+              state.isFetchingMore) {
+            resetController(PlanPageController(state.plan, state.ad));
+          }
+          return CustomScrollableContainer(
+            openedPosition: 200,
+            body: PlanMapPage(
+              key: Key(
+                  'PlanMapPageSSS${state.isFetchEarlier}${state.isFetchLater}${state.isFetchingMore}'),
+              planPageController: _planPageController,
+              customOverlayWidget: widget.customOverlayWidget,
+              customBetweenFabWidget: widget.customBetweenFabWidget,
+              markerConfiguration: cfg.markers,
+              transportConfiguration: cfg.transportConf,
+            ),
+            panel: CustomItinerary(
+              key: Key(
+                  'CustomItinerarySSS${state.isFetchEarlier}${state.isFetchLater}${state.isFetchingMore}'),
+              planPageController: _planPageController,
+            ),
+          );
+        },
+      )
     ];
     final homePageBloc = context.read<HomePageCubit>();
     if (homePageBloc.state.showSuccessAnimation &&
@@ -144,5 +150,24 @@ class CurrentPlanPageState extends State<CurrentPlanPage>
       );
     }
     return Stack(children: children);
+  }
+
+  void resetController(PlanPageController planPageController) {
+    _planPageController?.dispose();
+    _tabController?.dispose();
+    _planPageController = planPageController;
+    if (_planPageController.plan.itineraries.isNotEmpty) {
+      _planPageController.inSelectedItinerary.add(
+        _planPageController.plan.itineraries.first,
+      );
+    }
+    _tabController = TabController(
+      length: _planPageController.plan.itineraries.length,
+      vsync: this,
+    )..addListener(() {
+        _planPageController.inSelectedItinerary.add(
+          _planPageController.plan.itineraries[_tabController.index],
+        );
+      });
   }
 }

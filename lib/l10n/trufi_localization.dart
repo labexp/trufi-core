@@ -164,6 +164,24 @@ abstract class TrufiLocalization {
   /// **'Enjoying Trufi?'**
   String get appReviewDialogTitle;
 
+  /// Common Text Bike station
+  ///
+  /// In en, this message translates to:
+  /// **'Bike station'**
+  String get bikeRentalBikeStation;
+
+  /// Common Text Fetch a rental bike.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch a rental bike:'**
+  String get bikeRentalFetchRentalBike;
+
+  /// Text Bike Rental Network message FreeFloating
+  ///
+  /// In en, this message translates to:
+  /// **'Destination is not a designated drop-off area. Rental cannot be completed here. Please check terms & conditions for additional fees.'**
+  String get bikeRentalNetworkFreeFloating;
+
   /// This car park is close to capacity
   ///
   /// In en, this message translates to:
@@ -241,6 +259,12 @@ abstract class TrufiLocalization {
   /// In en, this message translates to:
   /// **'Destination'**
   String get commonDestination;
+
+  /// General details label
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get commonDetails;
 
   /// Message when an error has occured
   ///
@@ -560,6 +584,18 @@ abstract class TrufiLocalization {
   /// **'Please e-mail us'**
   String get feedbackTitle;
 
+  /// Text about extra fetch itineraries for Earlier departure title
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier departures'**
+  String get fetchMoreItinerariesEarlierDepartures;
+
+  /// Text about extra fetch itineraries for later departure title
+  ///
+  /// In en, this message translates to:
+  /// **'Later departures'**
+  String get fetchMoreItinerariesLaterDeparturesTitle;
+
   /// Facebook menu item
   ///
   /// In en, this message translates to:
@@ -806,6 +842,18 @@ abstract class TrufiLocalization {
   /// In en, this message translates to:
   /// **'Price only valid for public transport part of the journey.'**
   String get itineraryPriceOnlyPublicTransport;
+
+  /// Text title itinerary Summary Bike And Public Rail Subway
+  ///
+  /// In en, this message translates to:
+  /// **'Take your bike with you on the train or to metro'**
+  String get itinerarySummaryBikeAndPublicRailSubwayTitle;
+
+  /// Text title itinerary Summary Bike Park Title
+  ///
+  /// In en, this message translates to:
+  /// **'Leave your bike at a Park & Ride'**
+  String get itinerarySummaryBikeParkTitle;
 
   /// Itinerary Ticket Title label
   ///

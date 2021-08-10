@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:trufi_core/repository/wfs_weather_data_repository.dart';
 
 void main() {
@@ -41,7 +41,7 @@ void main() {
       final result = await subject.getCurrentWeatherAtLocation(
           now, LatLng(48.59523, 8.86648));
 
-      expect(result.temperature, "19.08");
+      expect(result.temperature, "19");
       expect(result.windSpeed, "4.8");
       expect(result.weatherSymbol, "3.0");
     });

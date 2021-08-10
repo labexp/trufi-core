@@ -564,6 +564,11 @@ class QuMaterialLocalizations extends GlobalMaterialLocalizations {
 
   @override
   String get dialModeButtonLabel => 'Switch to dial picker mode';
+ 
+  @override
+  String get firstPageTooltip => 'Fist page';
+  
+  String get lastPageTooltip => 'Last page';
 
   @override
   String get inputDateModeButtonLabel => 'Switch to input';
